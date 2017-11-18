@@ -123,4 +123,12 @@ public class PlayerController : MonoBehaviour
 			Debug.Log("Player died");
 		}
 	}
+
+    public void Restart(){
+        m_alive = true;
+        m_onGround = false;
+        m_stoppedJumping = true;
+        m_anim.SetBool("alive", true);
+        m_anim.SetBool("moving", false);
+    }
 }

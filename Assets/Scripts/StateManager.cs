@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StateManager : MonoBehaviour {
 
@@ -30,7 +31,7 @@ public class StateManager : MonoBehaviour {
 
 		int numStates = m_GameStates.Length;
 		foreach (GameObject go in m_GameStates){
-			//go.SetActive(false);
+			go.SetActive(false);
 		}
 
 		m_currentState = m_states.MENU;
@@ -56,5 +57,10 @@ public class StateManager : MonoBehaviour {
 		m_currentGameState = m_GameStates[(int)m_states.GAMEOVER];
 		m_currentGameState.SetActive(true);
 		m_currentState = m_states.GAMEOVER;
+	}
+
+	public void Restart(){
+		Start();
+		GameManager.Instance.RestartLevel();
 	}
 }

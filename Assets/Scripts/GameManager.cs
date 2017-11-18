@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour {
 	public float m_speedIncreaseRate;
 
 	public Text m_scoreUIText;
+	public Text m_highscoreUIText;
+
+	public GameObject player;
+	public GameObject roadroller;
 	private float m_score;
 	private float m_gameSpeed;
 
@@ -56,6 +60,8 @@ public class GameManager : MonoBehaviour {
 		m_speedIncreaseRate = 0.1f;
 		m_gameSpeed = 1f;
 
+		m_highscoreUIText.text = "Highscore:"+PlayerPrefs.GetFloat("highscore",0).ToString("0000");
+
 		AddSection();
 
 		nextObstacleTimer = Random.Range(nextObstacleMin,nextObstacleMax);
@@ -63,6 +69,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (StateManager.Instance.m_currentState == StateManager.m_states.PLAY)
 		m_gameSpeed += m_speedIncreaseRate * Time.deltaTime;
 		m_score += Time.deltaTime;
 
@@ -96,8 +103,26 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void RestartLevel(){
-		m_gameSpeed = 0.0f;
+		m_gameSpeed = 1.0f;
 		m_score = 0;
+		player.transform.position = new Vector3(0.5f,0.01f,-1f);
+		roadroller.transform.position = new Vector3(0.5f,1.253f,-3.053f);
+		player.GetComponent<PlayerController>().Restart();
+
+		m_currentPrefabPos = -10.0f;
+		GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+		foreach(GameObject go in obstacles){
+			Destroy(go);
+		}
+		GameObject[] grounds = GameObject.FindGameObjectsWithTag("Ground");
+		foreach(GameObject go in grounds){
+			Destroy(go);
+		}
+
+		CreateSection(2);
+		CreateSection(2);
+		CreateSection(2);
+		
 	}
 
 	public void RestartSpeed(){
@@ -119,12 +144,17 @@ public class GameManager : MonoBehaviour {
 		pos.x = m_currentPrefabPos;
 		pos.y = 0.25f;
 		pos.z = -1.0f;
-		GameObject tmp = Instantiate(m_prefabObstacles[0],pos,Quaternion.identity) as GameObject;
+		
+
+		GameObject tmp = Instantiate(m_prefabObstacles[Random.Range(0,m_prefabObstacles.Length)],pos,Quaternion.identity) as GameObject;
 		
 	}
 
 	public void PlayerDied(){
+		PlayerPrefs.SetFloat("highscore",m_score);
+		m_highscoreUIText.text = "Highscore:"+PlayerPrefs.GetFloat("highscore",0).ToString("0000");
 		StateManager.Instance.GameOver();
+
 		
 	}
 }
